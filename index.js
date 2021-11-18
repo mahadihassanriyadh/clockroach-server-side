@@ -44,6 +44,7 @@ async function run() {
         const usersCollection = database.collection('users');
         const ordersCollection = database.collection('orders');
         const reviewsCollection = database.collection('reviews');
+        const contactUsCollection = database.collection('contactUs');
 
       
         app.get('/products', async (req, res) => {
@@ -100,9 +101,11 @@ async function run() {
             res.json(result)
         })    
 
-        app.post('/appointments', async (req, res) => {
-            const appointment = req.body;
-            const result = await productsCollection.insertOne(appointment);
+        app.post('/contactUs', async (req, res) => {
+            const contactUs = req.body;
+            console.log(contactUs)
+            const result = await contactUsCollection.insertOne(contactUs);
+            console.log(result)
             res.json(result)
         })
       
