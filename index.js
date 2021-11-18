@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 require('dotenv').config();
+const ObjectId = require('mongodb').ObjectId;
 const { MongoClient } = require('mongodb');
 const admin = require("firebase-admin");
 
@@ -41,6 +42,7 @@ async function run() {
         const database = client.db('niche_website_clockroach')
         const productsCollection = database.collection('products');
         const usersCollection = database.collection('users');
+        const ordersCollection = database.collection('orders');
 
       
         app.get('/products', async (req, res) => {
@@ -56,6 +58,15 @@ async function run() {
             const products = await cursor.toArray();
             res.json(products);
         })
+
+        // GET Single Product
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log('getting specific service', id)
+            const query = { _id: ObjectId(id) };
+            const product = await productsCollection.findOne(query);
+            res.json(product);
+        })
         
         
     //   app.get('/products', veifyToken, async (req, res) => {
@@ -69,7 +80,18 @@ async function run() {
     //       res.json(appointments);
     //     }
         
-    //     })    
+    //     })
+        
+        
+        // POST Order (Place an order)
+        app.post('/placeOrder', async (req, res) => {
+            const orderDetails = req.body;
+            orderDetails.orderStatus = "pending" 
+            // console.log('hit the post api', orderDetails)
+            const result = await ordersCollection.insertOne(orderDetails);
+            // console.log(result)
+            res.json(result)
+        })    
 
         app.post('/appointments', async (req, res) => {
             const appointment = req.body;
