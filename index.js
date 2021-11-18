@@ -143,6 +143,14 @@ async function run() {
     //       res.status(403).json({message: "You don't have access to the certain part of the website"});
     //     }
     //   })
+        
+        // DELETE API from MyOrders
+        app.delete('/placeOrder/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        })
 
         }
         catch(error) {
