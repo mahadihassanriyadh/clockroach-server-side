@@ -21,20 +21,6 @@ admin.initializeApp({
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rnw2g.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-async function veifyToken(req, res, next) {
-    if (req.headers?.authorization?.startsWith('Bearer ')) {
-      const token = req.headers.authorization.split(' ')[1];
-      
-      try {
-        const decodedUser = await admin.auth().verifyIdToken(token);
-        req.decodedEmail = decodedUser.email;
-      }
-      catch(err) {
-          console.log(err.message)
-      }
-    }
-    next();
-}
 
 async function run() {
     try {
@@ -77,18 +63,17 @@ async function run() {
         })
         
         
-    //   app.get('/products', veifyToken, async (req, res) => {
-    //     const email = req.query.email;
-    //     // toLocaleString() to get the time + date
-    //     if (req.decodedEmail === email) {
-    //       const date = req.query.date;
-    //       const query = { email: email, date: date }
-    //       const cursor = productsCollection.find(query);
-    //       const appointments = await cursor.toArray();
-    //       res.json(appointments);
-    //     }
-        
-    //     })
+    // return orders of a user based on his/her email
+    app.get('/placeOrder', async (req, res) => {
+        console.log(req.headers)
+        console.log(req.headers.authorization)
+        const email = req.query.email;
+        const query = { email: email}
+        console.log(req.decodedEmail, email)
+        const cursor = ordersCollection.find(query);
+        const orders = await cursor.toArray();
+        res.json(orders);    
+        })    
         
         
         // POST Order (Place an order)
@@ -109,17 +94,19 @@ async function run() {
             res.json(result)
         })
       
-    //   app.get('/users/:email', async (req, res) => {
-    //     const email = req.params.email;
-    //     const query = { email: email };
-    //     const user = await usersCollection.findOne(query);
-    //     let isAdmin = false;
-    //     if (user?.role === 'admin') {
-    //       isAdmin = true;
-    //     }
-    //     res.json({ admin: isAdmin });
-    //   })
+    // check if the user is an admin
+      app.get('/users/:email', async (req, res) => {
+        const email = req.params.email;
+        const query = { email: email };
+        const user = await usersCollection.findOne(query);
+        let isAdmin = false;
+        if (user?.role === 'admin') {
+          isAdmin = true;
+        }
+        res.json({ admin: isAdmin });
+      })
       
+        
     // for normal registration
       app.post('/users', async (req, res) => {
         const user = req.body;
