@@ -90,6 +90,14 @@ async function run() {
             const pendingOrders = await cursor.toArray();
             res.json(pendingOrders);    
         })    
+
+        // GET approved orders
+        app.get('/approvedOrders', async (req, res) => {
+            const query = { orderStatus: 'shipped'}
+            const cursor = ordersCollection.find(query);
+            const approvedOrders = await cursor.toArray();
+            res.json(approvedOrders);    
+        })    
         
         
         // POST Order (Place an order)
