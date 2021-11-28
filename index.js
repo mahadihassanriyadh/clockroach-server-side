@@ -66,8 +66,8 @@ async function run() {
         
         // return orders of a user based on his/her email
         app.get('/myOrders', async (req, res) => {
-            console.log(req.headers)
-            console.log(req.headers.authorization)
+            // console.log(req.headers)
+            // console.log(req.headers.authorization)
             const email = req.query.email;
             const query = { email: email}
             console.log(req.decodedEmail, email)
@@ -81,7 +81,15 @@ async function run() {
             const cursor = ordersCollection.find({});
             const orders = await cursor.toArray();
             res.json(orders);    
-            })    
+        }) 
+
+        // GET pending orders
+        app.get('/pendingOrders', async (req, res) => {
+            const query = { orderStatus: 'pending'}
+            const cursor = ordersCollection.find(query);
+            const pendingOrders = await cursor.toArray();
+            res.json(pendingOrders);    
+        })    
         
         
         // POST Order (Place an order)
